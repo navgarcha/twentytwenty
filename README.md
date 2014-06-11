@@ -1,3 +1,5 @@
+A fork of zurb's image slider
+
 ## Basic usage
 
 Include the javascript and css files.
@@ -64,6 +66,10 @@ $(window).load(function(){
   $(".twentytwenty-container").twentytwenty();
 });
 ```
+
+#### Changelog
+
+* 2014-06-09 Add support for click events to show full "Before" and "After" images
 
 # Compass Quickstart
 

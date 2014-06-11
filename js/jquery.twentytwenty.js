@@ -38,19 +38,64 @@
         };
       };
 
+      /**
+       * Return -1 if "Before", 1 in "After" and 0 if neither
+       */
+      var calcMousePos = function(e) {
+        var el = $(e.target),
+            pos = (sliderOrientation === "vertical") ? e.offsetY : e.offsetX,
+            len = (sliderOrientation === "vertical") ? el.height() : el.width(),
+            half = len / 2,
+            pct = 0.35; // hit percentage area
+
+        if (pos < len * pct) { return -1; }
+        else if (len - (len * pct) < pos) { return 1; }
+        else { return 0; }
+      }
+
+      /**
+       * Handles a click event on the overlay
+       */
+      var handleOverlayClick = function(e) {
+        var mouse = calcMousePos(e);
+
+        if (mouse === -1) {
+          showFullImage(true);
+        } else if (mouse === 1) {
+          showFullImage(false);
+        }
+      }
+
+      /***
+       * Shows either the entire before or after image
+       */
+      var showFullImage = function(before) {
+        var offset = calcOffset(before ? 1 : 0);
+        slider.animate(calcSliderCSS(offset));
+        beforeImg.animate({"clip": calcClipCSS(offset)});
+      }
+
+      var calcSliderCSS = function(offset) {
+        var val = (sliderOrientation==="vertical") ? offset.ch : offset.cw;
+        return (sliderOrientation==="vertical") ? { "top" : val } : { "left" : val };
+      }
+
+      var calcClipCSS = function(offset) {
+        if (sliderOrientation === 'vertical') {
+          return "rect(0px "+offset.w+" "+offset.ch+" 0px)";
+        } else {
+          return "rect(0px "+offset.cw+" "+offset.h+" 0px)";
+        }
+      }
+
       var adjustContainer = function(offset) {
-      	if (sliderOrientation === 'vertical') {
-      	  beforeImg.css("clip", "rect(0,"+offset.w+","+offset.ch+",0)");
-      	}
-      	else {
-          beforeImg.css("clip", "rect(0,"+offset.cw+","+offset.h+",0)");
-    	}
+        beforeImg.css("clip", calcClipCSS(offset));
         container.css("height", offset.h);
       };
 
       var adjustSlider = function(pct) {
         var offset = calcOffset(pct);
-        slider.css((sliderOrientation==="vertical") ? "top" : "left", (sliderOrientation==="vertical") ? offset.ch : offset.cw);
+        slider.css(calcSliderCSS(offset));
         adjustContainer(offset);
       }
 
@@ -91,6 +136,8 @@
           adjustSlider(sliderPct);
         }
       });
+
+      overlay.on("click", handleOverlayClick);
 
       container.find("img").on("mousedown", function(event) {
         event.preventDefault();
