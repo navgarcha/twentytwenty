@@ -133,6 +133,10 @@
       opacity: 1; }
     .twentytwenty-overlay:hover .twentytwenty-before-label {
       opacity: 1; }
+  .twentytwenty-overlay.twentytwenty-isafter .twentytwenty-after-label:before {
+    color: #a9a9a9; }
+  .twentytwenty-overlay.twentytwenty-isbefore .twentytwenty-before-label:before {
+    color: #a9a9a9; }
 
 .twentytwenty-before {
   z-index: 20; }

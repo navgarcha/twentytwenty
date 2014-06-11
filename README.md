@@ -1,4 +1,4 @@
-A fork of zurb's image slider
+A fork of Zurb's twentytwenty image comparison plugin
 
 ## Basic usage
 

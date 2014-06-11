@@ -1,3 +1,12 @@
+/**
+ * A fork of Zurb's twentytwenty image comparison plugin
+ * 
+ * jquery.twentytwenty.js
+ * Original: https://github.com/zurb/twentytwenty/
+ *
+ * Modified by: Miguel Villanueva
+ * - Added click events to show full 'Before' and 'After' images
+ */
 (function($){
 
   $.fn.twentytwenty = function(options) {
@@ -9,6 +18,8 @@
       var sliderOrientation = options.orientation;
       var beforeDirection = (sliderOrientation === 'vertical') ? 'down' : 'left';
       var afterDirection = (sliderOrientation === 'vertical') ? 'up' : 'right';
+      var afterCls = 'twentytwenty-isafter';
+      var beforeCls = 'twentytwenty-isbefore';
       
       
       container.wrap("<div class='twentytwenty-wrapper twentytwenty-" + sliderOrientation + "'></div>");
@@ -39,13 +50,30 @@
       };
 
       /**
+       * Calculate the click position within the target element
+       */
+      var calcClickOffset = function(e) {
+        var xpos,
+            ypos;
+
+        if (e.offsetX === undefined) {
+          xpos = e.pageX-$(e.target).offset().left;
+          ypos = e.pageY-$(e.target).offset().top;
+        } else {
+          xpos = e.offsetX;
+          ypos = e.offsetY;
+        }
+
+        return (sliderOrientation === "vertical") ? ypos : xpos;
+      }
+
+      /**
        * Return -1 if "Before", 1 in "After" and 0 if neither
        */
       var calcMousePos = function(e) {
         var el = $(e.target),
-            pos = (sliderOrientation === "vertical") ? e.offsetY : e.offsetX,
+            pos = calcClickOffset(e),
             len = (sliderOrientation === "vertical") ? el.height() : el.width(),
-            half = len / 2,
             pct = 0.35; // hit percentage area
 
         if (pos < len * pct) { return -1; }
@@ -59,20 +87,50 @@
       var handleOverlayClick = function(e) {
         var mouse = calcMousePos(e);
 
-        if (mouse === -1) {
+        if (mouse === -1 && !imageIsBefore()) {
           showFullImage(true);
-        } else if (mouse === 1) {
+        } else if (mouse === 1 && !imageIsAfter()) {
           showFullImage(false);
         }
+      }
+
+      /**
+       * Helper functions for the before/after labels
+       */
+      var removeOverlayCSS = function() {
+        return overlay.removeClass(beforeCls + ' ' + afterCls);
+      }
+
+      var replaceOverlayCSS = function(before) {
+        return removeOverlayCSS().addClass(before ? beforeCls : afterCls);
+      }
+
+      var imageIsBefore = function() {
+        return overlay.hasClass(beforeCls);
+      }
+
+      var imageIsAfter = function() {
+        return overlay.hasClass(afterCls);
+      }
+
+      var updateBeforeAfter = function(pct) {
+        // adjust the before/after button styling
+        // pct == 1; before == true
+        
+        if (pct === 0) { replaceOverlayCSS(false); }
+        else if (pct === 1) { replaceOverlayCSS(true); }
+        else { removeOverlayCSS(); }
       }
 
       /***
        * Shows either the entire before or after image
        */
       var showFullImage = function(before) {
-        var offset = calcOffset(before ? 1 : 0);
+        var pct = before ? 1 : 0,
+            offset = calcOffset(pct);
         slider.animate(calcSliderCSS(offset));
         beforeImg.animate({"clip": calcClipCSS(offset)});
+        updateBeforeAfter(pct);
       }
 
       var calcSliderCSS = function(offset) {
@@ -97,6 +155,7 @@
         var offset = calcOffset(pct);
         slider.css(calcSliderCSS(offset));
         adjustContainer(offset);
+        updateBeforeAfter(pct);
       }
 
       $(window).on("resize.twentytwenty", function(e) {

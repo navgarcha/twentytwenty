@@ -209,6 +209,13 @@ $twenty20-label-radius: 2px !default;
     .#{$pluginPrefix}-after-label { opacity: 1; }
     .#{$pluginPrefix}-before-label { opacity: 1; }
   }
+
+  &.#{$pluginPrefix}-isafter {
+     .#{$pluginPrefix}-after-label:before { color: #a9a9a9; }
+  }
+  &.#{$pluginPrefix}-isbefore {
+     .#{$pluginPrefix}-before-label:before { color: #a9a9a9; }
+  }
 }
 
 .#{$pluginPrefix}-before { z-index: 20; }
