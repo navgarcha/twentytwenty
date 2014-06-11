@@ -16,8 +16,9 @@
       var sliderPct = options.default_offset_pct;
       var container = $(this);
       var sliderOrientation = options.orientation;
-      var beforeDirection = (sliderOrientation === 'vertical') ? 'down' : 'left';
-      var afterDirection = (sliderOrientation === 'vertical') ? 'up' : 'right';
+      var isVertical = sliderOrientation === 'vertical';
+      var beforeDirection = isVertical ? 'down' : 'left';
+      var afterDirection = isVertical ? 'up' : 'right';
       var afterCls = 'twentytwenty-isafter';
       var beforeCls = 'twentytwenty-isbefore';
       
@@ -65,7 +66,7 @@
         }
 
         return (sliderOrientation === "vertical") ? ypos : xpos;
-      }
+      };
 
       /**
        * Return -1 if "Before", 1 in "After" and 0 if neither
@@ -79,7 +80,7 @@
         if (pos < len * pct) { return -1; }
         else if (len - (len * pct) < pos) { return 1; }
         else { return 0; }
-      }
+      };
 
       /**
        * Handles a click event on the overlay
@@ -92,26 +93,26 @@
         } else if (mouse === 1 && !imageIsAfter()) {
           showFullImage(false);
         }
-      }
+      };
 
       /**
        * Helper functions for the before/after labels
        */
       var removeOverlayCSS = function() {
         return overlay.removeClass(beforeCls + ' ' + afterCls);
-      }
+      };
 
       var replaceOverlayCSS = function(before) {
         return removeOverlayCSS().addClass(before ? beforeCls : afterCls);
-      }
+      };
 
       var imageIsBefore = function() {
         return overlay.hasClass(beforeCls);
-      }
+      };
 
       var imageIsAfter = function() {
         return overlay.hasClass(afterCls);
-      }
+      };
 
       var updateBeforeAfter = function(pct) {
         // adjust the before/after button styling
@@ -120,46 +121,52 @@
         if (pct === 0) { replaceOverlayCSS(false); }
         else if (pct === 1) { replaceOverlayCSS(true); }
         else { removeOverlayCSS(); }
-      }
+      };
 
       /***
        * Shows either the entire before or after image
        */
       var showFullImage = function(before) {
-        var pct = before ? 1 : 0,
-            offset = calcOffset(pct);
-        slider.animate(calcSliderCSS(offset));
-        beforeImg.animate({"clip": calcClipCSS(offset)});
-        updateBeforeAfter(pct);
-      }
-
-      var calcSliderCSS = function(offset) {
-        var val = (sliderOrientation==="vertical") ? offset.ch : offset.cw;
-        return (sliderOrientation==="vertical") ? { "top" : val } : { "left" : val };
-      }
-
-      var calcClipCSS = function(offset) {
-        if (sliderOrientation === 'vertical') {
-          return "rect(0px "+offset.w+" "+offset.ch+" 0px)";
-        } else {
-          return "rect(0px "+offset.cw+" "+offset.h+" 0px)";
-        }
-      }
-
-      var adjustContainer = function(offset) {
-        beforeImg.css("clip", calcClipCSS(offset));
-        container.css("height", offset.h);
+        animateSlider(before ? 1 : 0);
       };
 
-      var adjustSlider = function(pct) {
-        var offset = calcOffset(pct);
-        slider.css(calcSliderCSS(offset));
-        adjustContainer(offset);
+      var calcSliderCSS = function(offset) {
+        var val = isVertical ? offset.ch : offset.cw;
+        return isVertical ? { "top" : val } : { "left" : val };
+      };
+
+      var calcClipCSS = function(offset) {
+        var clip;
+        if (isVertical) { clip = "rect(0px "+offset.w+" "+offset.ch+" 0px)"; }
+        else { clip = "rect(0px "+offset.cw+" "+offset.h+" 0px)"; }
+
+        return { clip: clip };
+      };
+
+      var adjustSlider = function(pct, animate) {
+        var offset = calcOffset(pct),
+            animate = (animate === undefined) ? false : animate;
+        
+        if (animate) {
+          slider.animate(calcSliderCSS(offset));
+          beforeImg.animate(calcClipCSS(offset));
+        } else {
+          slider.css(calcSliderCSS(offset));
+          beforeImg.css(calcClipCSS(offset));
+        }
+        
+        // adjust container
+        container.css("height", offset.h);
         updateBeforeAfter(pct);
-      }
+      };
+
+      var animateSlider = function(pct) {
+        adjustSlider(pct, true);
+      };
 
       $(window).on("resize.twentytwenty", function(e) {
-        adjustSlider(sliderPct);
+        adjustSlider(1); // show first image first
+        animateSlider(sliderPct); // animate to the pct offset
       });
 
       var offsetX = 0;
@@ -169,7 +176,7 @@
         if (((e.distX > e.distY && e.distX < -e.distY) || (e.distX < e.distY && e.distX > -e.distY)) && sliderOrientation !== 'vertical') {
           e.preventDefault();
         }
-        else if (((e.distX < e.distY && e.distX < -e.distY) || (e.distX > e.distY && e.distX > -e.distY)) && sliderOrientation === 'vertical') {
+        else if (((e.distX < e.distY && e.distX < -e.distY) || (e.distX > e.distY && e.distX > -e.distY)) && isVertical) {
           e.preventDefault();
         }
         container.addClass("active");
@@ -185,7 +192,7 @@
 
       slider.on("move", function(e) {
         if (container.hasClass("active")) {
-          sliderPct = (sliderOrientation === 'vertical') ? (e.pageY-offsetY)/imgHeight : (e.pageX-offsetX)/imgWidth;
+          sliderPct = isVertical ? (e.pageY-offsetY)/imgHeight : (e.pageX-offsetX)/imgWidth;
           if (sliderPct < 0) {
             sliderPct = 0;
           }
