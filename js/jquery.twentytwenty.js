@@ -83,19 +83,6 @@
       };
 
       /**
-       * Handles a click event on the overlay
-       */
-      var handleOverlayClick = function(e) {
-        var mouse = calcMousePos(e);
-
-        if (mouse === -1 && !imageIsBefore()) {
-          showFullImage(true);
-        } else if (mouse === 1 && !imageIsAfter()) {
-          showFullImage(false);
-        }
-      };
-
-      /**
        * Helper functions for the before/after labels
        */
       var removeOverlayCSS = function() {
@@ -127,7 +114,8 @@
        * Shows either the entire before or after image
        */
       var showFullImage = function(before) {
-        animateSlider(before ? 1 : 0);
+        sliderPct = before ? 1 : 0; // store new value
+        animateSlider(sliderPct);
       };
 
       var calcSliderCSS = function(offset) {
@@ -135,6 +123,10 @@
         return isVertical ? { "top" : val } : { "left" : val };
       };
 
+      /**
+       * Calculate the css clip property -- depends on the slider orientation
+       * @param  object offset  - the offset object
+       */
       var calcClipCSS = function(offset) {
         var clip;
         if (isVertical) { clip = "rect(0px "+offset.w+" "+offset.ch+" 0px)"; }
@@ -143,6 +135,11 @@
         return { clip: clip };
       };
 
+      /**
+       * Adjusts the slider to the new percentage
+       * @param  double   pct     - the pct to move the slider to
+       * @param  boolean  animate - whether to animate the slider move
+       */
       var adjustSlider = function(pct, animate) {
         var offset = calcOffset(pct),
             animate = (animate === undefined) ? false : animate;
@@ -160,18 +157,26 @@
         updateBeforeAfter(pct);
       };
 
+      /**
+       * Same as adjust slider except with the animation flag set
+       */
       var animateSlider = function(pct) {
         adjustSlider(pct, true);
       };
 
+      /**
+       * Window event listener
+       */
       $(window).on("resize.twentytwenty", function(e) {
-        adjustSlider(1); // show first image first
-        animateSlider(sliderPct); // animate to the pct offset
+        adjustSlider(sliderPct);
       });
 
       var offsetX = 0;
       var imgWidth = 0;
       
+      /**
+       * Slider event listeners
+       */
       slider.on("movestart", function(e) {
         if (((e.distX > e.distY && e.distX < -e.distY) || (e.distX < e.distY && e.distX > -e.distY)) && sliderOrientation !== 'vertical') {
           e.preventDefault();
@@ -203,13 +208,30 @@
         }
       });
 
-      overlay.on("click", handleOverlayClick);
+      /**
+       * Overlay event listener
+       */
+      overlay.on("click", function(e) {
+        var mouse = calcMousePos(e);
+
+        if (mouse === -1 && !imageIsBefore()) {
+          showFullImage(true);
+        } else if (mouse === 1 && !imageIsAfter()) {
+          showFullImage(false);
+        }
+      });
 
       container.find("img").on("mousedown", function(event) {
         event.preventDefault();
       });
 
-      $(window).trigger("resize.twentytwenty");
+      /**
+       * Initialize the slider
+       */
+      (function() {
+        adjustSlider(1); // show first image first
+        animateSlider(sliderPct); // animate to the initial offset pct
+      })();
     });
   };
 
