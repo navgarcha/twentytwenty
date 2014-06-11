@@ -6,6 +6,7 @@ Include the javascript and css files.
 
 ```html
 <script src="js/jquery-2.1.0.min.js" type="text/javascript"></script>
+<script src="js/jquery.animate.clip.js" type="text/javascript"></script>
 <script src="js/jquery.event.move.js" type="text/javascript"></script>
 <script src="js/jquery.twentytwenty.js" type="text/javascript"></script>
 <link rel="stylesheet" href="css/twentytwenty.css" type="text/css" media="screen" />
@@ -67,7 +68,7 @@ $(window).load(function(){
 });
 ```
 
-#### Changelog
+### Changelog
 
 * 2014-06-09 Add support for click events to show full "Before" and "After" images
 
@@ -96,6 +97,7 @@ All default [Sass](http://sass-lang.com/) variables can be found in `scss/twenty
 ## Dependencies
 
   * [jquery](http://jquery.com/)
+  * [jquery.animate.clip](https://github.com/jpoehls/jpoehls.github.com/blob/master/_posts/2013/2013-03-06-jquery-css-clip-animation-plugin.md)
   * [jquery.event.move](https://github.com/stephband/jquery.event.move)
 
 ## MIT Open Source License
