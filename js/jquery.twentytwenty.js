@@ -22,7 +22,6 @@
       var afterCls = 'twentytwenty-isafter';
       var beforeCls = 'twentytwenty-isbefore';
       
-      
       container.wrap("<div class='twentytwenty-wrapper twentytwenty-" + sliderOrientation + "'></div>");
       container.append("<div class='twentytwenty-overlay'></div>");
       var beforeImg = container.find("img:first");
@@ -150,10 +149,9 @@
         } else {
           slider.css(calcSliderCSS(offset));
           beforeImg.css(calcClipCSS(offset));
+          container.css("height", offset.h);
         }
         
-        // adjust container
-        container.css("height", offset.h);
         updateBeforeAfter(pct);
       };
 
@@ -162,6 +160,20 @@
        */
       var animateSlider = function(pct) {
         adjustSlider(pct, true);
+      };
+      var preloadImages = function() {
+        var before = new Image(),
+            after = new Image();
+        before.src = beforeImg.attr('src');
+        after.src = afterImg.attr('src');
+        var wait = function() {
+          if (before.complete && after.complete) {
+            return;
+          } else {
+            setTimeout(wait, 100);
+          }
+        };
+        wait();
       };
 
       /**
@@ -229,10 +241,12 @@
        * Initialize the slider
        */
       (function() {
+        preloadImages(); // preload images
         adjustSlider(1); // show first image first
-        animateSlider(sliderPct); // animate to the initial offset pct
+        afterImg.show(function() {
+          animateSlider(sliderPct); // animate to the initial offset pct
+        });
       })();
     });
   };
-
 })(jQuery);

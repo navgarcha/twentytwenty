@@ -123,6 +123,10 @@ $twenty20-label-radius: 2px !default;
     position: absolute;
     top: 0;
     display: block;
+
+    &:last-of-type {
+      display: none;
+    }
   }
 
   &.active .#{$pluginPrefix}-overlay,
