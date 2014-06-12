@@ -143,16 +143,16 @@
         var offset = calcOffset(pct),
             animate = (animate === undefined) ? false : animate;
         
+        container.css("height", offset.h);
+        updateBeforeAfter(pct);
+
         if (animate) {
           slider.animate(calcSliderCSS(offset));
           beforeImg.animate(calcClipCSS(offset));
         } else {
           slider.css(calcSliderCSS(offset));
           beforeImg.css(calcClipCSS(offset));
-          container.css("height", offset.h);
         }
-        
-        updateBeforeAfter(pct);
       };
 
       /**
@@ -242,10 +242,9 @@
        */
       (function() {
         preloadImages(); // preload images
-        adjustSlider(1); // show first image first
-        afterImg.show(function() {
-          animateSlider(sliderPct); // animate to the initial offset pct
-        });
+        beforeImg.css('display', 'block');
+        afterImg.css('display', 'block');
+        $(window).trigger("resize.twentytwenty");
       })();
     });
   };

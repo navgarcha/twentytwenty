@@ -122,11 +122,7 @@ $twenty20-label-radius: 2px !default;
     max-width: 100%;
     position: absolute;
     top: 0;
-    display: block;
-
-    &:last-of-type {
-      display: none;
-    }
+    display: none;
   }
 
   &.active .#{$pluginPrefix}-overlay,
