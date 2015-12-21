@@ -1,11 +1,12 @@
 /**
  * A fork of Zurb's twentytwenty image comparison plugin
- * 
+ *
  * jquery.twentytwenty.js
  * Original: https://github.com/zurb/twentytwenty/
  *
  * Modified by: Miguel Villanueva
  * - Added click events to show full 'Before' and 'After' images
+ * - Option to change 'Before' and 'After' button text
  */
 (function($){
 
@@ -16,12 +17,14 @@
       var sliderPct = options.default_offset_pct;
       var container = $(this);
       var sliderOrientation = options.orientation;
+      var beforeText = options.before_text ? options.before_text : 'Before';
+      var afterText = options.after_text ? options.after_text : 'After';
       var isVertical = sliderOrientation === 'vertical';
       var beforeDirection = isVertical ? 'down' : 'left';
       var afterDirection = isVertical ? 'up' : 'right';
       var afterCls = 'twentytwenty-isafter';
       var beforeCls = 'twentytwenty-isbefore';
-      
+
       container.wrap("<div class='twentytwenty-wrapper twentytwenty-" + sliderOrientation + "'></div>");
       container.append("<div class='twentytwenty-overlay'></div>");
       var beforeImg = container.find("img:first");
@@ -33,10 +36,10 @@
       container.addClass("twentytwenty-container");
       beforeImg.addClass("twentytwenty-before");
       afterImg.addClass("twentytwenty-after");
-      
+
       var overlay = container.find(".twentytwenty-overlay");
-      overlay.append("<div class='twentytwenty-before-label'></div>");
-      overlay.append("<div class='twentytwenty-after-label'></div>");
+      overlay.append("<div class='twentytwenty-before-label' data-before-text='" + beforeText + "'></div>");
+      overlay.append("<div class='twentytwenty-after-label' data-after-text='" + afterText + "'></div>");
 
       var calcOffset = function(dimensionPct) {
         var w = beforeImg.width();
@@ -103,7 +106,7 @@
       var updateBeforeAfter = function(pct) {
         // adjust the before/after button styling
         // pct == 1; before == true
-        
+
         if (pct === 0) { replaceOverlayCSS(false); }
         else if (pct === 1) { replaceOverlayCSS(true); }
         else { removeOverlayCSS(); }
@@ -142,7 +145,7 @@
       var adjustSlider = function(pct, animate) {
         var offset = calcOffset(pct),
             animate = (animate === undefined) ? false : animate;
-        
+
         container.css("height", offset.h);
         updateBeforeAfter(pct);
 
@@ -185,7 +188,7 @@
 
       var offsetX = 0;
       var imgWidth = 0;
-      
+
       /**
        * Slider event listeners
        */
@@ -199,8 +202,8 @@
         container.addClass("active");
         offsetX = container.offset().left;
         offsetY = container.offset().top;
-        imgWidth = beforeImg.width(); 
-        imgHeight = beforeImg.height();          
+        imgWidth = beforeImg.width();
+        imgHeight = beforeImg.height();
       });
 
       slider.on("moveend", function(e) {

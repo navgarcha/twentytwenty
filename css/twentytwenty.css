@@ -102,12 +102,12 @@
 .twentytwenty-before-label {
   opacity: 0; }
   .twentytwenty-before-label:before {
-    content: "Before"; }
+    content: attr(data-before-text); }
 
 .twentytwenty-after-label {
   opacity: 0; }
   .twentytwenty-after-label:before {
-    content: "After"; }
+    content: attr(data-after-text); }
 
 .twentytwenty-horizontal .twentytwenty-before-label:before {
   left: 10px; }
