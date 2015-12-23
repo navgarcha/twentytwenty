@@ -15,7 +15,7 @@
     }
 
     function getClip(elem) {
-        var cssClip = $(elem).css('clip') || '';
+        var cssClip = jQuery(elem).css('clip') || '';
 
         if (!cssClip) {
             // Try to get the clip rect another way for IE8.
