@@ -146,7 +146,6 @@
         var offset = calcOffset(pct),
             animate = (animate === undefined) ? false : animate;
 
-        container.css("height", offset.h);
         updateBeforeAfter(pct);
 
         if (animate) {
